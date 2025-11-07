@@ -1,0 +1,14 @@
+numpy
+pandas
+joblib
+requests-cache
+retry-requests
+openmeteo-requests
+scikit-learn
+flask
+flask-cors
+googlemaps
+google-generativeai
+matplotlib
+python-dotenv
+gunicorn
