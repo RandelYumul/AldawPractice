@@ -27,6 +27,9 @@ from dotenv import load_dotenv
 load_dotenv()
 warnings.filterwarnings("ignore")
 
+def start_service():
+    print("✅ Service started")
+
 # ---------- Configuration ----------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CSV_FILE = os.path.join(BASE_DIR, "dataset", "angelesdataset.csv")
