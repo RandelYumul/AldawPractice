@@ -6,5 +6,7 @@ requests
 requests-cache
 googlemaps
 google-generativeai
+pyflakes
 python-dotenv
 matplotlib
+gunicorn

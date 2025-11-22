@@ -44,7 +44,11 @@ OPENMETEO_ARCHIVE = "https://archive-api.open-meteo.com/v1/archive"
 OPENMETEO_FORECAST = "https://api.open-meteo.com/v1/forecast"
 
 # Flask
-app = Flask(__name__, static_folder="../static")
+STATIC_DIR = os.path.join(ROOT_DIR, "static")
+TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
+
+# Create Flask app with absolute static and template paths so WSGI servers can serve correctly
+app = Flask(__name__, static_folder=STATIC_DIR, template_folder=TEMPLATE_DIR)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Cached HTTP session (reduce repeated external calls)
@@ -207,8 +211,15 @@ def save_prediction_csv(hourly_avg_df: pd.DataFrame, target_date: date, path=HEA
 
 @app.route("/")
 def index():
-    # Serve index.html from the project root
-    return send_file(os.path.join(ROOT_DIR, "index.html"))
+    # Serve the app's index.html from the app templates directory (production-friendly)
+    index_path = os.path.join(TEMPLATE_DIR, "index.html")
+    if os.path.exists(index_path):
+        return send_file(index_path)
+    # fallback to project root index if present
+    root_index = os.path.join(ROOT_DIR, "index.html")
+    if os.path.exists(root_index):
+        return send_file(root_index)
+    return ("Index not found", 404)
 
 @app.route('/get_api_key', methods=['GET'])
 def get_api_key():
@@ -472,4 +483,8 @@ if __name__ == '__main__':
         print('WARNING: GOOGLE_API_KEY not set. Some features will use fallbacks.')
     if not GEMINI_API_KEY:
         print('WARNING: GEMINI_API_KEY not set. AI recommendations will be basic fallbacks.')
-    app.run(host="0.0.0.0", port=5000, debug=False)
+
+    # Respect environment PORT (useful for platforms like Heroku) and DEBUG flag
+    port = int(os.getenv('PORT', '5000'))
+    debug_flag = os.getenv('FLASK_DEBUG', '0') in ('1', 'true', 'True')
+    app.run(host='0.0.0.0', port=port, debug=debug_flag)

@@ -217,3 +217,35 @@ Integration of machine learning and environmental analysis to predict heat index
 ---
 
 > *Aldaw-Wave: Your companion in outsmarting the sun with better timing!*
+
+---
+
+## Deployment (Quick)
+
+- **Install dependencies**
+
+```powershell
+pip install -r requirements.txt
+```
+
+- **Run locally with Flask (development)**
+
+```powershell
+python -m app.aldaw_wave
+```
+
+- **Run with Gunicorn (production-like)**
+
+```powershell
+# Unix-like platforms or WSL
+gunicorn wsgi:app --bind 0.0.0.0:8000
+```
+
+- **Deploy to Heroku (example)**
+
+1. `heroku create`
+2. `git push heroku main`
+3. `heroku config:set GOOGLE_API_KEY=... GEMINI_API_KEY=...`
+4. `heroku ps:scale web=1`
+
+Note: Ensure your `.env` or platform environment contains `GOOGLE_API_KEY` and `GEMINI_API_KEY`.
