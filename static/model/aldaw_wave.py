@@ -328,8 +328,8 @@ def recommendation():
 
     # Build departure window
     latest_departure = arrival_dt - travel_time
-    window_start = latest_departure - timedelta(hours=5)
-    window_end = latest_departure + timedelta(hours=5)
+    window_start = latest_departure - timedelta(hours=2)
+    window_end = latest_departure + timedelta(hours=2)
     num_intervals = int(((window_end - window_start).total_seconds() // 1800) + 1)
     departure_times = [window_start + timedelta(minutes=30*i) for i in range(max(0, num_intervals))]
 
