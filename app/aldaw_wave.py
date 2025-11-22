@@ -30,7 +30,8 @@ warnings.filterwarnings("ignore")
 
 # ---------- Configuration ----------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR = os.path.abspath(os.path.join(BASE_DIR, "../.."))  # go up to project root
+# Project root is one level above the `app` folder
+ROOT_DIR = os.path.abspath(os.path.join(BASE_DIR, ".."))  # go up to project root
 PH_CITIES_CSV = os.path.join(BASE_DIR, "dataset", "philippines_cities.csv")
 HEAT_INDEX_CSV = os.path.join(BASE_DIR, "dataset", "heat_index.csv")
 HEAT_INDEX_PRED_CSV = os.path.join(BASE_DIR, "dataset", "heat_index_prediction.csv")
@@ -211,15 +212,30 @@ def save_prediction_csv(hourly_avg_df: pd.DataFrame, target_date: date, path=HEA
 
 @app.route("/")
 def index():
-    # Serve the app's index.html from the app templates directory (production-friendly)
-    index_path = os.path.join(TEMPLATE_DIR, "index.html")
-    if os.path.exists(index_path):
-        return send_file(index_path)
-    # fallback to project root index if present
-    root_index = os.path.join(ROOT_DIR, "index.html")
-    if os.path.exists(root_index):
-        return send_file(root_index)
+    # Try app templates first
+    index_candidates = [
+        os.path.join(TEMPLATE_DIR, "index.html"),
+        os.path.join(ROOT_DIR, "index.html"),
+        os.path.join(STATIC_DIR, "index.html")
+    ]
+    for index_path in index_candidates:
+        if index_path and os.path.exists(index_path):
+            return send_file(index_path)
     return ("Index not found", 404)
+
+
+@app.route('/about')
+def about():
+    # Serve about page from templates or project root
+    about_candidates = [
+        os.path.join(TEMPLATE_DIR, 'about.html'),
+        os.path.join(ROOT_DIR, 'about.html'),
+        os.path.join(STATIC_DIR, 'about.html')
+    ]
+    for p in about_candidates:
+        if p and os.path.exists(p):
+            return send_file(p)
+    return ("About page not found", 404)
 
 @app.route('/get_api_key', methods=['GET'])
 def get_api_key():
